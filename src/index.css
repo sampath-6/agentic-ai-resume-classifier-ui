@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--color-slate-50);
+  color: var(--color-slate-800);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-blue-200);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Compact prose styling for rendered markdown answers in chat bubbles */
+.markdown-answer > :first-child {
+  margin-top: 0;
+}
+.markdown-answer > :last-child {
+  margin-bottom: 0;
+}
+.markdown-answer h1 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0.6rem 0 0.4rem;
+  color: var(--color-blue-900);
+}
+.markdown-answer h2,
+.markdown-answer h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0.6rem 0 0.3rem;
+  color: var(--color-blue-800);
+}
+.markdown-answer p {
+  margin: 0.4rem 0;
+  line-height: 1.5;
+}
+.markdown-answer ul,
+.markdown-answer ol {
+  margin: 0.4rem 0;
+  padding-left: 1.2rem;
+  list-style: revert;
+}
+.markdown-answer li {
+  margin: 0.2rem 0;
+}
+.markdown-answer strong {
+  font-weight: 600;
+  color: var(--color-blue-900);
+}
+.markdown-answer hr {
+  margin: 0.6rem 0;
+  border: none;
+  border-top: 1px solid var(--color-slate-200);
+}
+.markdown-answer code {
+  background: var(--color-blue-50);
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+}
