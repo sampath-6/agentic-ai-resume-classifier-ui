@@ -21,6 +21,23 @@ export interface UploadResult {
 }
 
 export interface QueryResult {
+  thread_id: string
   answer: string
   matches: Match[]
+}
+
+export interface Checkpoint {
+  checkpoint_id: string
+  created_at: string
+  source: string | null
+  step: number
+  next: string[]
+  state: Record<string, unknown>
+}
+
+export interface CheckpointsResponse {
+  thread_id: string
+  count: number
+  langsmith_enabled: boolean
+  checkpoints: Checkpoint[]
 }

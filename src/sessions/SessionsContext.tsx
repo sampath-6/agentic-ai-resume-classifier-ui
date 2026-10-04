@@ -16,6 +16,9 @@ export interface Session {
   title: string
   messages: ChatMessage[]
   createdAt: number
+  // backend LangGraph thread id, assigned on the first query and reused for the
+  // rest of the chat so the conversation resumes the same graph thread
+  threadId?: string
 }
 
 const UPLOAD_SESSION: Session = {
@@ -36,6 +39,7 @@ interface SessionsContextValue {
   deleteChatSession: (id: string) => void
   appendMessage: (sessionId: string, message: ChatMessage) => void
   renameSession: (sessionId: string, title: string) => void
+  setSessionThreadId: (sessionId: string, threadId: string) => void
 }
 
 const SessionsContext = createContext<SessionsContextValue | undefined>(undefined)
@@ -88,6 +92,10 @@ export function SessionsProvider({ children }: { children: ReactNode }) {
     setChatSessions((prev) => prev.map((s) => (s.id === sessionId ? { ...s, title } : s)))
   }
 
+  function setSessionThreadId(sessionId: string, threadId: string) {
+    setChatSessions((prev) => prev.map((s) => (s.id === sessionId ? { ...s, threadId } : s)))
+  }
+
   return (
     <SessionsContext.Provider
       value={{
@@ -98,6 +106,7 @@ export function SessionsProvider({ children }: { children: ReactNode }) {
         deleteChatSession,
         appendMessage,
         renameSession,
+        setSessionThreadId,
       }}
     >
       {children}

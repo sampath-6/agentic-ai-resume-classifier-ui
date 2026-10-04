@@ -109,6 +109,11 @@ export function UploadSession() {
               <XCircle size={14} /> Failed to parse: {lastResult.failed.length}
             </p>
           )}
+          {lastResult.thread_id && (
+            <p className="mt-1 font-mono text-[11px] text-slate-400" title={lastResult.thread_id}>
+              thread: {lastResult.thread_id}
+            </p>
+          )}
         </div>
       )}
 

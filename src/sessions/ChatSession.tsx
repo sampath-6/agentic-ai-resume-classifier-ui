@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { Loader2, Search, ShieldAlert, Send } from 'lucide-react'
+import { Loader2, Search, ShieldAlert, Send, Workflow } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { apiClient, extractErrorMessage } from '../api/client'
 import type { QueryResult } from '../api/types'
 import { useSessions, type ChatMessage } from './SessionsContext'
 import { ResumeTable } from '../components/ResumeTable'
+import { StepsPanel } from './StepsPanel'
 
 const SUGGESTIONS = [
   'Senior Python backend engineer with AWS experience',
@@ -13,10 +14,11 @@ const SUGGESTIONS = [
 ]
 
 export function ChatSession({ sessionId }: { sessionId: string }) {
-  const { sessions, appendMessage, renameSession } = useSessions()
+  const { sessions, appendMessage, renameSession, setSessionThreadId } = useSessions()
   const session = sessions.find((s) => s.id === sessionId)
   const [input, setInput] = useState('')
   const [isSending, setIsSending] = useState(false)
+  const [showSteps, setShowSteps] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -45,7 +47,14 @@ export function ChatSession({ sessionId }: { sessionId: string }) {
     try {
       const formData = new FormData()
       formData.append('query', query)
+      // resume this chat's backend thread if it already has one
+      if (session!.threadId) formData.append('thread_id', session!.threadId)
       const { data } = await apiClient.post<QueryResult>('/query', formData)
+
+      // first response assigns the thread; reuse it for the rest of the chat
+      if (!session!.threadId && data.thread_id) {
+        setSessionThreadId(session!.id, data.thread_id)
+      }
 
       const message: ChatMessage = {
         id: crypto.randomUUID(),
@@ -69,6 +78,24 @@ export function ChatSession({ sessionId }: { sessionId: string }) {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
+      {session.threadId && (
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-6 py-1.5">
+          <span className="truncate font-mono text-[11px] text-slate-400" title={session.threadId}>
+            thread: {session.threadId}
+          </span>
+          <button
+            onClick={() => setShowSteps((v) => !v)}
+            className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs transition ${
+              showSteps
+                ? 'border-blue-200 bg-blue-50 text-blue-700'
+                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <Workflow size={13} /> {showSteps ? 'Hide steps' : 'View steps'}
+          </button>
+        </div>
+      )}
+      {session.threadId && showSteps && <StepsPanel threadId={session.threadId} />}
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-3xl flex-col gap-5 p-6">
           {session.messages.length === 0 && (
